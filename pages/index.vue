@@ -5,17 +5,10 @@
         Buscar Endereço por CEP
       </h1>
 
-      <input
-        v-model="cep"
-        type="text"
-        placeholder="Digite o CEP"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      <input v-model="cep" type="text" placeholder="Digite o CEP"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
-      <button
-        @click="buscarEndereco"
-        class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
-      >
+      <button @click="buscarEndereco" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
         Buscar
       </button>
 
@@ -33,11 +26,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
+import type CEP from "./cep";
 
 const cep = ref("");
-const endereco = ref(null);
+const endereco = ref<CEP | null>();
 const erro = ref("");
 
 async function buscarEndereco() {
@@ -45,23 +39,23 @@ async function buscarEndereco() {
 
   if (cepLimpo.length !== 8) {
     erro.value = "Insira um CEP com 8 dígitos";
-    endereco.value = "";
+    endereco.value = null;
     return;
   }
 
   try {
-    const response = await $fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+    const response = await $fetch<CEP>(`https://viacep.com.br/ws/${cepLimpo}/json/`);
 
     if (response.erro) {
       erro.value = "CEP não encontrado";
-      endereco.value = "";
+      endereco.value = null;
     } else {
       endereco.value = response;
       erro.value = "";
     }
   } catch (e) {
     erro.value = "Erro ao buscar o endereço";
-    endereco.value = "";
+    endereco.value = null;
   }
 }
 </script>
